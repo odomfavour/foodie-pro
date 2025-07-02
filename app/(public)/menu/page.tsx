@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import {
-  ShoppingCart,
   Search,
   MapPin,
   Filter,
@@ -11,23 +10,45 @@ import {
   ChevronDown,
 } from 'lucide-react';
 
+type MenuItem = {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  rating: number;
+  reviews: number;
+  image: string;
+  tags: string[];
+};
+
+type Category = {
+  id: string;
+  name: string;
+  count: number;
+};
+
+type Cart = {
+  [itemId: number]: number;
+};
+
 const MenuPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [cart, setCart] = useState({});
-  const [selectedBranch, setSelectedBranch] = useState(
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [cart, setCart] = useState<Cart>({});
+  const [selectedBranch, setSelectedBranch] = useState<string>(
     'Victoria Island Branch'
   );
-  const [showBranchDropdown, setShowBranchDropdown] = useState(false);
+  const [showBranchDropdown, setShowBranchDropdown] = useState<boolean>(false);
 
-  const branches = [
+  const branches: string[] = [
     'Victoria Island Branch',
     'Ikeja Branch',
     'Lekki Branch',
     'Surulere Branch',
   ];
 
-  const categories = [
+  const categories: Category[] = [
     { id: 'all', name: 'All Items', count: 24 },
     { id: 'appetizers', name: 'Appetizers', count: 6 },
     { id: 'mains', name: 'Main Courses', count: 12 },
@@ -35,7 +56,7 @@ const MenuPage = () => {
     { id: 'desserts', name: 'Desserts', count: 4 },
   ];
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       id: 1,
       title: 'Jollof Rice Special',
@@ -121,31 +142,30 @@ const MenuPage = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const addToCart = (itemId) => {
+  const addToCart = (itemId: number) => {
     setCart((prev) => ({
       ...prev,
       [itemId]: (prev[itemId] || 0) + 1,
     }));
   };
 
-  const removeFromCart = (itemId) => {
+  const removeFromCart = (itemId: number) => {
     setCart((prev) => ({
       ...prev,
       [itemId]: Math.max((prev[itemId] || 0) - 1, 0),
     }));
   };
 
-  const getTotalItems = () => {
-    return Object.values(cart).reduce((sum, count) => sum + count, 0);
-  };
+  // const getTotalItems = (): number => {
+  //   return Object.values(cart).reduce((sum, count) => sum + count, 0);
+  // };
 
-  const getTotalPrice = () => {
-    return Object.entries(cart).reduce((sum, [itemId, count]) => {
-      const item = menuItems.find((item) => item.id === parseInt(itemId));
-      return sum + (item ? item.price * count : 0);
-    }, 0);
-  };
-
+  // const getTotalPrice = (): number => {
+  //   return Object.entries(cart).reduce((sum, [itemId, count]) => {
+  //     const item = menuItems.find((item) => item.id === parseInt(itemId));
+  //     return sum + (item ? item.price * (count as number) : 0);
+  //   }, 0);
+  // };
   return (
     <div className="min-h-screen bg-black pt-[100px]">
       {/* Header with Location Selector */}

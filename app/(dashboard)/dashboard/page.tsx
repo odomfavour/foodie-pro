@@ -1,16 +1,11 @@
 'use client';
 import React, { useState } from 'react';
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -20,7 +15,6 @@ import {
 import {
   Users,
   Store,
-  TrendingUp,
   DollarSign,
   ShoppingBag,
   Clock,
@@ -28,12 +22,8 @@ import {
   Settings,
   Eye,
   Edit,
-  Trash2,
-  MapPin,
   Star,
   AlertCircle,
-  Activity,
-  Calendar,
   Filter,
   Download,
 } from 'lucide-react';
@@ -154,7 +144,7 @@ const SuperAdminDashboard = () => {
     },
   ];
 
-  const [showBranchModal, setShowBranchModal] = useState(false);
+  // const [showBranchModal, setShowBranchModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">

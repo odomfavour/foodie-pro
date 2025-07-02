@@ -1,8 +1,7 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MapPin,
-  Clock,
   Star,
   ShoppingBag,
   Truck,
@@ -10,13 +9,7 @@ import {
   ChefHat,
   Heart,
   ArrowRight,
-  Menu,
-  X,
   Sparkles,
-  Zap,
-  Globe,
-  Camera,
-  Play,
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -33,7 +26,7 @@ const RestaurantLanding = () => {
   const [currentFoodSlide, setCurrentFoodSlide] = useState(0);
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
@@ -396,10 +389,12 @@ const RestaurantLanding = () => {
       {/* CTA Section */}
       <section className="relative py-32 overflow-hidden">
         <div className="absolute inset-0">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
             alt="Restaurant atmosphere"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-orange-900/60 to-red-900/80"></div>
         </div>
@@ -413,8 +408,8 @@ const RestaurantLanding = () => {
             </span>
           </h2>
           <p className="text-2xl text-white/90 mb-12 font-light max-w-3xl mx-auto">
-            Join thousands of food lovers who've discovered their new favorite
-            dining destination. Your table awaits.
+            Join thousands of food lovers who&apos;ve discovered their new
+            favorite dining destination. Your table awaits.
           </p>
           <div className="flex flex-col sm:flex-row gap-8 justify-center">
             <button className="group relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-600 text-white px-16 py-6 rounded-full text-xl font-black tracking-wider hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 transform hover:scale-110">

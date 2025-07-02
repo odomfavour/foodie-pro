@@ -1,17 +1,41 @@
 'use client';
 import React, { useState } from 'react';
-import {
-  MapPin,
-  Clock,
-  Phone,
-  Navigation,
-  Star,
-  Filter,
-  Search,
-} from 'lucide-react';
+import { MapPin, Clock, Phone, Navigation, Star, Search } from 'lucide-react';
+import Image from 'next/image';
+interface Coordinates {
+  lat: number;
+  lng: number;
+}
 
-// Sample images (replace with your actual image paths)
-const branchImages = [
+interface OpenHours {
+  weekdays: string;
+  weekends: string;
+}
+
+interface Branch {
+  id: number;
+  name: string;
+  address: string;
+  coordinates: Coordinates;
+  distance: number;
+  phone: string;
+  rating: number;
+  reviews: number;
+  openHours: OpenHours;
+  services: string[];
+  isOpen: boolean;
+  features: string[];
+  image: string;
+  manager: string;
+  staff: number;
+}
+
+interface DeliveryType {
+  value: string;
+  label: string;
+}
+
+const branchImages: string[] = [
   'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
   'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
   'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
@@ -21,7 +45,7 @@ const branchImages = [
 const LocationsPage = () => {
   const [searchLocation, setSearchLocation] = useState('');
   const [selectedDeliveryType, setSelectedDeliveryType] = useState('all');
-  const [userLocation, setUserLocation] = useState(null);
+  // const [setUserLocation] = useState<Coordinates | null>(null);
   const [sortBy, setSortBy] = useState('distance');
 
   const branches = [
@@ -122,7 +146,7 @@ const LocationsPage = () => {
     },
   ];
 
-  const deliveryTypes = [
+  const deliveryTypes: DeliveryType[] = [
     { value: 'all', label: 'All Services' },
     { value: 'dine-in', label: 'Dine-in' },
     { value: 'takeaway', label: 'Takeaway' },
@@ -146,23 +170,23 @@ const LocationsPage = () => {
     return 0;
   });
 
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-        }
-      );
-    }
-  };
+  // const getCurrentLocation = (): void => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position: GeolocationPosition) => {
+  //         setUserLocation({
+  //           lat: position.coords.latitude,
+  //           lng: position.coords.longitude,
+  //         });
+  //       },
+  //       (error: GeolocationPositionError) => {
+  //         console.error('Error getting location:', error);
+  //       }
+  //     );
+  //   }
+  // };
 
-  const selectBranch = (branch) => {
+  const selectBranch = (branch: Branch) => {
     console.log('Selected branch:', branch.name);
     alert(`Selected ${branch.name}! Redirecting to menu...`);
   };
@@ -172,10 +196,12 @@ const LocationsPage = () => {
       {/* Bent Background Section */}
       <div className="relative h-96 w-full overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-900 to-indigo-900">
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
             alt="Restaurant Interior"
-            className="w-full h-full object-cover opacity-20"
+            fill
+            className="object-cover opacity-20"
+            priority
           />
         </div>
         <div className="absolute bottom-0 w-full h-32 bg-gray-900 transform -skew-y-3 origin-bottom-left"></div>
@@ -192,10 +218,7 @@ const LocationsPage = () => {
             Select a branch near you to start ordering
           </p>
 
-          <button
-            onClick={getCurrentLocation}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2 mx-auto"
-          >
+          <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2 mx-auto">
             <Navigation className="w-5 h-5" />
             <span>Use My Location</span>
           </button>
@@ -257,11 +280,15 @@ const LocationsPage = () => {
               className="bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-700"
             >
               <div className="relative h-48 w-full overflow-hidden">
-                <img
+                <Image
                   src={branch.image}
                   alt={branch.name}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  fill
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                  sizes="100vw"
+                  priority
                 />
+
                 <div className="absolute top-4 left-4">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -273,6 +300,7 @@ const LocationsPage = () => {
                     {branch.isOpen ? 'Open' : 'Closed'}
                   </span>
                 </div>
+
                 <div className="absolute top-4 right-4 bg-gray-900 rounded-lg px-2 py-1 text-sm font-medium text-gray-200 shadow">
                   {branch.distance} km away
                 </div>
