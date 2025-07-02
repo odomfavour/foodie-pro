@@ -36,6 +36,7 @@ const Login = () => {
       // TODO: replace this with actual login logic
       console.log('Login data:', data);
       toast.success('Logged in successfully');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.message || 'Login failed');
     } finally {
