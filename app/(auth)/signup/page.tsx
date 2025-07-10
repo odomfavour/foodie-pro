@@ -5,38 +5,42 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { TextInputField } from '@/components/ui/custom/TextInputField'; // Adjust path if needed
+import { TextInputField } from '@/components/ui/custom/TextInputField';
+import { toast } from 'react-toastify'; // if you're using toast
+import { useRegister } from '@/hooks/custom/use-auth';
 
 // ✅ Validation Schema
 const signupSchema = z.object({
   fullName: z.string().min(3, 'Full Name must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+  phoneCode: z.string().min(2, 'Phone code is required'),
+  phone: z.string().min(6, 'Phone number must be at least 6 digits'),
   address: z.string().min(5, 'Address must be at least 5 characters'),
-  answer: z.string().min(2, 'Security answer must be at least 2 characters'),
-  userType: z.enum(['admin', 'user', 'moderator']),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 const Signup = () => {
+  const { mutate: registerMutate, isPending: loading } = useRegister();
+
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       fullName: '',
       email: '',
       password: '',
+      phoneCode: '+234',
       phone: '',
       address: '',
-      answer: '',
-      userType: 'user',
     },
   });
 
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const totalSteps = 2;
 
@@ -44,8 +48,28 @@ const Signup = () => {
   const prevStep = () => step > 1 && setStep(step - 1);
 
   const onSubmit = async (data: SignupFormValues) => {
-    console.log('Signup Data:', data);
-    alert('Signup successful!');
+    const payload = {
+      fullName: data.fullName,
+      email: data.email,
+      password: data.password,
+      address: data.address,
+      phone: {
+        code: data.phoneCode,
+        number: data.phone.replace(/^0/, ''),
+      },
+    };
+
+    console.log('hhdf', payload);
+
+    registerMutate(payload, {
+      onSuccess: () => {
+        toast.success('Signup successful');
+        router.push('/login');
+      },
+      onError: (error: any) => {
+        toast.error(error?.response?.data?.message || 'Signup failed');
+      },
+    });
   };
 
   return (
@@ -87,11 +111,26 @@ const Signup = () => {
           {/* ✅ Step 2: Additional Info */}
           {step === 2 && (
             <>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">
+                  Phone Code
+                </label>
+                <select
+                  {...form.register('phoneCode')}
+                  className="w-full rounded-md border border-gray-300 p-2 text-black bg-white"
+                >
+                  <option value="+234">+234 (Nigeria)</option>
+                  <option value="+1">+1 (USA)</option>
+                  <option value="+44">+44 (UK)</option>
+                  <option value="+91">+91 (India)</option>
+                </select>
+              </div>
+
               <TextInputField
                 control={form.control}
                 name="phone"
                 type="tel"
-                label="Phone"
+                label="Phone Number"
                 placeholder="Enter your phone number"
                 required
               />
@@ -102,14 +141,6 @@ const Signup = () => {
                 placeholder="Enter your address"
                 required
               />
-              <TextInputField
-                control={form.control}
-                name="answer"
-                label="Security Answer"
-                placeholder="Enter security answer"
-                required
-              />
-              {/* You can replace this with a custom SelectField later if needed */}
             </>
           )}
 
@@ -126,14 +157,15 @@ const Signup = () => {
                   Next
                 </Button>
               ) : (
-                <Button type="submit">Signup</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Signing up...' : 'Signup'}
+                </Button>
               )}
             </div>
           </div>
         </form>
       </Form>
 
-      {/* ✅ Already have an account? */}
       <p className="text-sm text-center mt-4 text-white">
         Already have an account?{' '}
         <Link href="/login" className="text-blue-300 hover:underline">

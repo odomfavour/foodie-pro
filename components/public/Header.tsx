@@ -1,11 +1,23 @@
 'use client';
-import { ChefHat, Menu, Sparkles, X } from 'lucide-react';
+import { ChefHat, ChevronDown, LogOut, Menu, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/auth-provider';
+import { Button } from '../ui/button';
+import { getInitials } from '@/utils/helpers';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { isAuthenticated, user, logout } = useAuth();
   const navItems = [
     { label: 'LOCATIONS', path: '/locations' },
     { label: 'MENU', path: '/menu' },
@@ -68,13 +80,58 @@ const Header = () => {
                 </button>
               </div>
 
-              <Link
-                href="/signup"
-                className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-600 text-white px-8 py-3 rounded-full font-bold tracking-wider hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 transform hover:scale-105 group"
-              >
-                <span className="relative z-10">Signup</span>
-                <Sparkles className="absolute top-1 right-1 w-4 h-4 text-white/60 animate-pulse" />
-              </Link>
+              {!isAuthenticated ? (
+                <Link
+                  href="/signup"
+                  className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-600 text-white px-8 py-3 rounded-full font-bold tracking-wider hover:shadow-2xl hover:shadow-orange-500/30 transition-all duration-300 transform hover:scale-105 group"
+                >
+                  <span className="relative z-10">Signup</span>
+                  <Sparkles className="absolute top-1 right-1 w-4 h-4 text-white/60 animate-pulse" />
+                </Link>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 p-1.5"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={user?.avatarUrl || ''}
+                          alt={user?.fullName}
+                        />
+                        <AvatarFallback>
+                          {getInitials(user?.fullName)}
+                        </AvatarFallback>
+                      </Avatar>
+                      {/* <span className="hidden sm:block max-w-[120px] truncate text-sm font-medium text-gray-700 text-left">
+              {user.name}
+            </span> */}
+                      <span>
+                        <ChevronDown className="text-white" />
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="font-medium text-sm truncate">
+                        {user?.fullName}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {user?.email}
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={logout}
+                      className="cursor-pointer text-red-600"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
 
             <button

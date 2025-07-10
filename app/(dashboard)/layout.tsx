@@ -1,12 +1,14 @@
-// components/Layout.tsx
+import DashboardWrapper from '@/components/public/DashboardWrapper';
+import React from 'react';
 
-import Sidebar from '@/components/public/Sidebar';
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex">
-      <Sidebar />
-      <main className="flex-1 p-6">{children}</main>
-    </div>
+    <>
+      <DashboardWrapper>{children}</DashboardWrapper>
+    </>
   );
 }

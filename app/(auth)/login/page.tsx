@@ -5,11 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-provider';
 import { toast } from 'react-toastify';
-
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { TextInputField } from '@/components/ui/custom/TextInputField'; // <-- adjust path as needed
+import { useRouter } from 'next/navigation';
 
 // Schema definition
 const loginSchema = z.object({
@@ -21,6 +22,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const { login, isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,10 +35,20 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     setLoading(true);
+
     try {
       // TODO: replace this with actual login logic
-      console.log('Login data:', data);
-      toast.success('Logged in successfully');
+      const response = await login(data);
+      console.log('response', response, isAuthenticated);
+      if (response?.token && isAuthenticated) {
+        if (response?.user?.role == 'customer') {
+          router.push('/menu');
+        } else {
+          router.push('/dashboard');
+          console.log('Login data:', data);
+          toast.success('Logged in successfully');
+        }
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error?.message || 'Login failed');
